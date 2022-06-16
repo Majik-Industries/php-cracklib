@@ -1,0 +1,7 @@
+ARG_ENABLE('crack', 'crack support', 'no');
+
+if (PHP_CRACK != 'no') {
+	AC_DEFINE('HAVE_CRACK', 1, 'crack support enabled');
+
+	EXTENSION('crack', 'crack.c', null, '/DZEND_ENABLE_STATIC_TSRMLS_CACHE=1');
+}
