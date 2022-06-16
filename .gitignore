@@ -1,5 +1,6 @@
 # Development files
 *.swp
+*~
 
 # phpize temporary files
 Makefile
@@ -26,4 +27,18 @@ ltmain.sh
 missing
 mkinstalldirs
 run-tests.php
+
+# compiled stuff
+.libs/
+crack.la
+crack.lo
+modules/
+
+# Tests
+tests/*.diff
+tests/*.exp
+tests/*.log
+tests/*.out
+tests/*.php
+tests/*.sh
 

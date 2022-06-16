@@ -2,6 +2,7 @@
 
 #ifndef PHP_CRACK_H
 # define PHP_CRACK_H
+#include <crack.h>
 
 extern zend_module_entry crack_module_entry;
 # define phpext_crack_ptr &crack_module_entry

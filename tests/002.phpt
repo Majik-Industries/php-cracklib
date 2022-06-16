@@ -1,5 +1,5 @@
 --TEST--
-crack_test1() Basic test
+crack_check() Basic test
 --SKIPIF--
 <?php
 if (!extension_loaded('crack')) {
@@ -8,7 +8,7 @@ if (!extension_loaded('crack')) {
 ?>
 --FILE--
 <?php
-$ret = crack_test1();
+$ret = crack_check("oogabooga");
 
 var_dump($ret);
 ?>

@@ -28,45 +28,44 @@ PHP_FUNCTION(crack_check)
 
 
 
-    char *db = NULL;
-    size_t db_len = 0;
+    char *dict = NULL;
+    size_t dict_len = 0;
     char *user = "root";
     size_t user_len = sizeof("root") - 1;
     char *gecos = NULL;
     size_t gecos_len = 0;
-    zval ok;
+    zval *ok;
+    zval *retval;
 
-    db = GetDefaultCracklibDict();
-    db_len = strlen(db);
 
-    /* Default to a valid password */
-    ZVAL_TRUE(ok);
+	ZEND_PARSE_PARAMETERS_START(0, 1)
+		Z_PARAM_STRING(passwd, passwd_len)
+        Z_PARAM_OPTIONAL
+		Z_PARAM_STRING(dict, dict_len)
+		Z_PARAM_STRING(user, user_len)
+		Z_PARAM_STRING(gecos, gecos_len)
+	ZEND_PARSE_PARAMETERS_END();
+
 
     /* Return value is an associative array
         $retval = array("ok" => bool, "reason" = NULL|string);
 
     */
     array_init(retval);
-
-	ZEND_PARSE_PARAMETERS_START(0, 1)
-		Z_PARAM_STRING(passwd, passwd_len)
-        Z_PARAM_OPTIONAL
-		Z_PARAM_STRING(db, db_len)
-		Z_PARAM_STRING(user, user_len)
-		Z_PARAM_STRING(gecos, gecos_len)
-	ZEND_PARSE_PARAMETERS_END();
+    dict = (char *)GetDefaultCracklibDict();
+    dict_len = strlen(dict);
 
 
-
-    if ((msg = FascistCheckUser(passwd, dict, user, gecos)) == NULL) {
-        add_assoc_str(retval, "ok", ok ,0);
-        add_assoc_str(retval, "reason", zend_string_init(CRACK_OK, strlen(CRACK_OK)) ,0);
-    } else {
+    if ((msg = (char *)FascistCheckUser(passwd, dict, user, gecos)) == NULL) {
         ZVAL_TRUE(ok);
-        add_assoc_str(retval, "ok", ok ,0);
-        add_assoc_str(retval, "reason", zend_string_init(msg, strlen(msg)) ,0);
+        add_assoc_bool(retval, "ok", Z_LVAL_P(ok));
+        add_assoc_stringl(retval, "reason", CRACK_OK, strlen(CRACK_OK));
+    } else {
+        ZVAL_FALSE(ok);
+        add_assoc_bool(retval, "ok", Z_LVAL_P(ok));
+        add_assoc_stringl(retval, "reason", msg, strlen(msg));
     }
-	RETURN_ARRAY(retval);
+	RETURN_ARR(Z_ARR_P(retval));
 }
 /* }}}*/
 
