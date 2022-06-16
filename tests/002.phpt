@@ -10,6 +10,8 @@ if (!extension_loaded('crack')) {
 <?php
 $ret = crack_check("oogabooga");
 
+echo $ret["reason"];
+
 var_dump($ret);
 ?>
 --EXPECT--

@@ -38,7 +38,7 @@ PHP_FUNCTION(crack_check)
     zval *retval;
 
 
-	ZEND_PARSE_PARAMETERS_START(0, 1)
+	ZEND_PARSE_PARAMETERS_START(0, 4)
 		Z_PARAM_STRING(passwd, passwd_len)
         Z_PARAM_OPTIONAL
 		Z_PARAM_STRING(dict, dict_len)
