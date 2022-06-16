@@ -8,6 +8,8 @@
 #include "ext/standard/info.h"
 #include "php_crack.h"
 
+#define CRACK_OK "Password OK"
+
 /* For compatibility with older PHP versions */
 #ifndef ZEND_PARSE_PARAMETERS_NONE
 #define ZEND_PARSE_PARAMETERS_NONE() \
@@ -15,32 +17,56 @@
 	ZEND_PARSE_PARAMETERS_END()
 #endif
 
-/* {{{ void crack_test1()
+/* {{{ string crack_check( [ string $var ] )
  */
-PHP_FUNCTION(crack_test1)
+PHP_FUNCTION(crack_check)
 {
-	ZEND_PARSE_PARAMETERS_NONE();
 
-	php_printf("The extension %s is loaded and working!\r\n", "crack");
-}
-/* }}} */
+    char *msg = NULL;
+	char *passwd = NULL;
+	size_t passwd_len = 0;
 
-/* {{{ string crack_test2( [ string $var ] )
- */
-PHP_FUNCTION(crack_test2)
-{
-	char *var = "World";
-	size_t var_len = sizeof("World") - 1;
-	zend_string *retval;
+
+
+    char *db = NULL;
+    size_t db_len = 0;
+    char *user = "root";
+    size_t user_len = sizeof("root") - 1;
+    char *gecos = NULL;
+    size_t gecos_len = 0;
+    zval ok;
+
+    db = GetDefaultCracklibDict();
+    db_len = strlen(db);
+
+    /* Default to a valid password */
+    ZVAL_TRUE(ok);
+
+    /* Return value is an associative array
+        $retval = array("ok" => bool, "reason" = NULL|string);
+
+    */
+    array_init(retval);
 
 	ZEND_PARSE_PARAMETERS_START(0, 1)
-		Z_PARAM_OPTIONAL
-		Z_PARAM_STRING(var, var_len)
+		Z_PARAM_STRING(passwd, passwd_len)
+        Z_PARAM_OPTIONAL
+		Z_PARAM_STRING(db, db_len)
+		Z_PARAM_STRING(user, user_len)
+		Z_PARAM_STRING(gecos, gecos_len)
 	ZEND_PARSE_PARAMETERS_END();
 
-	retval = strpprintf(0, "Hello %s", var);
 
-	RETURN_STR(retval);
+
+    if ((msg = FascistCheckUser(passwd, dict, user, gecos)) == NULL) {
+        add_assoc_str(retval, "ok", ok ,0);
+        add_assoc_str(retval, "reason", zend_string_init(CRACK_OK, strlen(CRACK_OK)) ,0);
+    } else {
+        ZVAL_TRUE(ok);
+        add_assoc_str(retval, "ok", ok ,0);
+        add_assoc_str(retval, "reason", zend_string_init(msg, strlen(msg)) ,0);
+    }
+	RETURN_ARRAY(retval);
 }
 /* }}}*/
 
@@ -68,19 +94,18 @@ PHP_MINFO_FUNCTION(crack)
 
 /* {{{ arginfo
  */
-ZEND_BEGIN_ARG_INFO(arginfo_crack_test1, 0)
-ZEND_END_ARG_INFO()
-
-ZEND_BEGIN_ARG_INFO(arginfo_crack_test2, 0)
+ZEND_BEGIN_ARG_INFO(arginfo_crack_check, 0)
 	ZEND_ARG_INFO(0, str)
+	ZEND_ARG_INFO(1, str)
+	ZEND_ARG_INFO(2, str)
+	ZEND_ARG_INFO(3, str)
 ZEND_END_ARG_INFO()
 /* }}} */
 
 /* {{{ crack_functions[]
  */
 static const zend_function_entry crack_functions[] = {
-	PHP_FE(crack_test1,		arginfo_crack_test1)
-	PHP_FE(crack_test2,		arginfo_crack_test2)
+	PHP_FE(crack_check,		arginfo_crack_check)
 	PHP_FE_END
 };
 /* }}} */
