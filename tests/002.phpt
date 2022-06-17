@@ -10,10 +10,12 @@ if (!extension_loaded('cracklib')) {
 <?php
 $ret = cracklib_check("oogabooga");
 
-echo $ret["reason"];
-
 var_dump($ret);
 ?>
 --EXPECT--
-The extension cracklib is loaded and working!
-NULL
+array(2) {
+  ["ok"]=>
+  bool(false)
+  ["reason"]=>
+  string(47) "it does not contain enough DIFFERENT characters"
+}

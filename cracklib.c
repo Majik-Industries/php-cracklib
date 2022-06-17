@@ -42,9 +42,9 @@ PHP_FUNCTION(cracklib_check)
 	ZEND_PARSE_PARAMETERS_START(1, 4)
 		Z_PARAM_STRING(passwd, passwd_len)
         Z_PARAM_OPTIONAL
-		Z_PARAM_STRING(dict, dict_len)
 		Z_PARAM_STRING(user, user_len)
 		Z_PARAM_STRING(gecos, gecos_len)
+		Z_PARAM_STRING(dict, dict_len)
 	ZEND_PARSE_PARAMETERS_END();
 
     /* Allocate local variables that are returned */
@@ -94,9 +94,9 @@ PHP_MINFO_FUNCTION(cracklib)
  */
 ZEND_BEGIN_ARG_INFO(arginfo_cracklib_check, 0)
 	ZEND_ARG_INFO(0, str)
-	ZEND_ARG_INFO(1, str)
-	ZEND_ARG_INFO(2, str)
-	ZEND_ARG_INFO(3, str)
+	ZEND_ARG_INFO(0, str)
+	ZEND_ARG_INFO(0, str)
+	ZEND_ARG_INFO(0, str)
 ZEND_END_ARG_INFO()
 /* }}} */
 
