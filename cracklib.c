@@ -1,4 +1,4 @@
-/* crack extension for PHP */
+/* cracklib extension for PHP */
 
 #ifdef HAVE_CONFIG_H
 # include "config.h"
@@ -6,9 +6,9 @@
 
 #include "php.h"
 #include "ext/standard/info.h"
-#include "php_crack.h"
+#include "php_cracklib.h"
 
-#define CRACK_OK "Password OK"
+#define CRACKLIB_OK "Password OK"
 
 /* For compatibility with older PHP versions */
 #ifndef ZEND_PARSE_PARAMETERS_NONE
@@ -17,9 +17,9 @@
 	ZEND_PARSE_PARAMETERS_END()
 #endif
 
-/* {{{ string crack_check( [ string $var ] )
+/* {{{ string cracklib_check( [ string $var ] )
  */
-PHP_FUNCTION(crack_check)
+PHP_FUNCTION(cracklib_check)
 {
 
     char *msg = NULL;
@@ -34,11 +34,12 @@ PHP_FUNCTION(crack_check)
     size_t user_len = sizeof("root") - 1;
     char *gecos = NULL;
     size_t gecos_len = 0;
-    zval *ok;
     zval *retval;
 
+    dict = (char *)GetDefaultCracklibDict();
+    dict_len = strlen(dict);
 
-	ZEND_PARSE_PARAMETERS_START(0, 4)
+	ZEND_PARSE_PARAMETERS_START(1, 4)
 		Z_PARAM_STRING(passwd, passwd_len)
         Z_PARAM_OPTIONAL
 		Z_PARAM_STRING(dict, dict_len)
@@ -46,23 +47,21 @@ PHP_FUNCTION(crack_check)
 		Z_PARAM_STRING(gecos, gecos_len)
 	ZEND_PARSE_PARAMETERS_END();
 
+    /* Allocate local variables that are returned */
+    retval = (zval *)malloc(sizeof(zval));
 
     /* Return value is an associative array
         $retval = array("ok" => bool, "reason" = NULL|string);
 
     */
-    array_init(retval);
-    dict = (char *)GetDefaultCracklibDict();
-    dict_len = strlen(dict);
+    array_init_size(retval, 2);
 
 
     if ((msg = (char *)FascistCheckUser(passwd, dict, user, gecos)) == NULL) {
-        ZVAL_TRUE(ok);
-        add_assoc_bool(retval, "ok", Z_LVAL_P(ok));
-        add_assoc_stringl(retval, "reason", CRACK_OK, strlen(CRACK_OK));
+        add_assoc_bool(retval, "ok", 1);
+        add_assoc_stringl(retval, "reason", CRACKLIB_OK, strlen(CRACKLIB_OK));
     } else {
-        ZVAL_FALSE(ok);
-        add_assoc_bool(retval, "ok", Z_LVAL_P(ok));
+        add_assoc_bool(retval, "ok", 0);
         add_assoc_stringl(retval, "reason", msg, strlen(msg));
     }
 	RETURN_ARR(Z_ARR_P(retval));
@@ -71,9 +70,9 @@ PHP_FUNCTION(crack_check)
 
 /* {{{ PHP_RINIT_FUNCTION
  */
-PHP_RINIT_FUNCTION(crack)
+PHP_RINIT_FUNCTION(cracklib)
 {
-#if defined(ZTS) && defined(COMPILE_DL_CRACK)
+#if defined(ZTS) && defined(COMPILE_DL_CRACKLIB)
 	ZEND_TSRMLS_CACHE_UPDATE();
 #endif
 
@@ -83,17 +82,17 @@ PHP_RINIT_FUNCTION(crack)
 
 /* {{{ PHP_MINFO_FUNCTION
  */
-PHP_MINFO_FUNCTION(crack)
+PHP_MINFO_FUNCTION(cracklib)
 {
 	php_info_print_table_start();
-	php_info_print_table_header(2, "crack support", "enabled");
+	php_info_print_table_header(2, "cracklib support", "enabled");
 	php_info_print_table_end();
 }
 /* }}} */
 
 /* {{{ arginfo
  */
-ZEND_BEGIN_ARG_INFO(arginfo_crack_check, 0)
+ZEND_BEGIN_ARG_INFO(arginfo_cracklib_check, 0)
 	ZEND_ARG_INFO(0, str)
 	ZEND_ARG_INFO(1, str)
 	ZEND_ARG_INFO(2, str)
@@ -101,34 +100,34 @@ ZEND_BEGIN_ARG_INFO(arginfo_crack_check, 0)
 ZEND_END_ARG_INFO()
 /* }}} */
 
-/* {{{ crack_functions[]
+/* {{{ cracklib_functions[]
  */
-static const zend_function_entry crack_functions[] = {
-	PHP_FE(crack_check,		arginfo_crack_check)
+static const zend_function_entry cracklib_functions[] = {
+	PHP_FE(cracklib_check,		arginfo_cracklib_check)
 	PHP_FE_END
 };
 /* }}} */
 
-/* {{{ crack_module_entry
+/* {{{ cracklib_module_entry
  */
-zend_module_entry crack_module_entry = {
+zend_module_entry cracklib_module_entry = {
 	STANDARD_MODULE_HEADER,
-	"crack",					/* Extension name */
-	crack_functions,			/* zend_function_entry */
+	"cracklib",					/* Extension name */
+	cracklib_functions,			/* zend_function_entry */
 	NULL,							/* PHP_MINIT - Module initialization */
 	NULL,							/* PHP_MSHUTDOWN - Module shutdown */
-	PHP_RINIT(crack),			/* PHP_RINIT - Request initialization */
+	PHP_RINIT(cracklib),			/* PHP_RINIT - Request initialization */
 	NULL,							/* PHP_RSHUTDOWN - Request shutdown */
-	PHP_MINFO(crack),			/* PHP_MINFO - Module info */
-	PHP_CRACK_VERSION,		/* Version */
+	PHP_MINFO(cracklib),			/* PHP_MINFO - Module info */
+	PHP_CRACKLIB_VERSION,		/* Version */
 	STANDARD_MODULE_PROPERTIES
 };
 /* }}} */
 
-#ifdef COMPILE_DL_CRACK
+#ifdef COMPILE_DL_CRACKLIB
 # ifdef ZTS
 ZEND_TSRMLS_CACHE_DEFINE()
 # endif
-ZEND_GET_MODULE(crack)
+ZEND_GET_MODULE(cracklib)
 #endif
 

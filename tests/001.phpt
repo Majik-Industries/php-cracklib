@@ -1,14 +1,14 @@
 --TEST--
-Check if crack is loaded
+Check if cracklib is loaded
 --SKIPIF--
 <?php
-if (!extension_loaded('crack')) {
+if (!extension_loaded('cracklib')) {
 	echo 'skip';
 }
 ?>
 --FILE--
 <?php
-echo 'The extension "crack" is available';
+echo 'The extension "cracklib" is available';
 ?>
 --EXPECT--
-The extension "crack" is available
+The extension "cracklib" is available

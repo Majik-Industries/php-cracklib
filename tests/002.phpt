@@ -1,19 +1,19 @@
 --TEST--
-crack_check() Basic test
+cracklib_check() Basic test
 --SKIPIF--
 <?php
-if (!extension_loaded('crack')) {
+if (!extension_loaded('cracklib')) {
 	echo 'skip';
 }
 ?>
 --FILE--
 <?php
-$ret = crack_check("oogabooga");
+$ret = cracklib_check("oogabooga");
 
 echo $ret["reason"];
 
 var_dump($ret);
 ?>
 --EXPECT--
-The extension crack is loaded and working!
+The extension cracklib is loaded and working!
 NULL
